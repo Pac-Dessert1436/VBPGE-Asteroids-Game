@@ -1,0 +1,8 @@
+Public Class SpaceObject(
+    X As Single = 0,
+    Y As Single = 0,
+    Dx As Single = 0,
+    Dy As Single = 0,
+    Size As Integer = 0,
+    Angle As Single = 0
+)

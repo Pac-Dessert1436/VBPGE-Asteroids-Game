@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>VBPGE_Asteroids_Game</RootNamespace>
+    <TargetFramework>net10.0</TargetFramework>
+    <OptionExplicit>On</OptionExplicit>
+    <OptionStrict>On</OptionStrict>
+    <OptionInfer>On</OptionInfer>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="RecGen" Version="2.2.0" />
+    <PackageReference Include="System.Drawing.Common" Version="10.0.7" />
+    <PackageReference Include="NAudio" Version="2.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="vbPixelGameEngine">
+      <HintPath>vbPixelGameEngine.dll</HintPath>
+    </Reference>
+    <AdditionalFiles Include="Records.rec" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Assets/*">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>
