@@ -10,6 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="FieldDisposerVB.Generator" Version="1.0.5" />
     <PackageReference Include="RecGen" Version="2.2.0" />
     <PackageReference Include="System.Drawing.Common" Version="10.0.7" />
     <PackageReference Include="NAudio" Version="2.3.0" />

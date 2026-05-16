@@ -21,10 +21,10 @@ Public NotInheritable Class Asteroids
     Private m_gameState As GameState = GameState.Title
     Private m_lives As Integer = 3
 
-    Private sndPlayerShooting As SoundPlayer
-    Private sndAsteroidShot As SoundPlayer
-    Private sndLifeLost As SoundPlayer
-    Private sndMainTheme As SoundPlayer
+    <DisposeField> Private sndPlayerShooting As SoundPlayer
+    <DisposeField> Private sndAsteroidShot As SoundPlayer
+    <DisposeField> Private sndLifeLost As SoundPlayer
+    <DisposeField> Private sndMainTheme As SoundPlayer
 
     Protected Overrides Function OnUserCreate() As Boolean
 
@@ -108,9 +108,13 @@ Public NotInheritable Class Asteroids
 
         If GetKey(Key.P).Released Then m_gameState = GameState.Paused
 
-        ' Fire Bullet
+        ' Fire bullet, and accelerate bullets when player is moving faster
         If GetKey(Key.SPACE).Released Then
-            m_bullets.Add(New SpaceObject(m_player.X, m_player.Y, 50.0F * CSng(Math.Sin(m_player.Angle)), -50.0F * CSng(Math.Cos(m_player.Angle))))
+            m_bullets.Add(New SpaceObject(
+                m_player.X, m_player.Y,
+                50.0F * CSng(Math.Sin(m_player.Angle)) + m_player.Dx,
+                -50.0F * CSng(Math.Cos(m_player.Angle)) + m_player.Dy
+            ))
             sndPlayerShooting.Play()
         End If
 
@@ -139,15 +143,20 @@ Public NotInheritable Class Asteroids
                     If ast.Size > 4 Then
                         Dim angle1 = Rand / RAND_MAX * 6.283185
                         Dim angle2 = Rand / RAND_MAX * 6.283185
-                        newAstroids.Add(New SpaceObject(ast.X, ast.Y, 15 * CSng(Math.Sin(angle1)), 15 * CSng(Math.Cos(angle1)), ast.Size >> 1, 0.0))
-                        newAstroids.Add(New SpaceObject(ast.X, ast.Y, 15 * CSng(Math.Sin(angle2)), 15 * CSng(Math.Cos(angle2)), ast.Size >> 1, 0.0))
+                        newAstroids.Add(New SpaceObject(ast.X, ast.Y,
+                            15 * CSng(Math.Sin(angle1)),
+                            15 * CSng(Math.Cos(angle1)),
+                            ast.Size >> 1, 0.0))
+                        newAstroids.Add(New SpaceObject(ast.X, ast.Y,
+                            15 * CSng(Math.Sin(angle2)),
+                            15 * CSng(Math.Cos(angle2)),
+                            ast.Size >> 1, 0.0))
                     End If
                     ast.X = -100
                     m_score += 50
                 End If
-            Next
-
-        Next
+            Next ast
+        Next bullet
 
         ' Append new astroids to existing vector
         newAstroids.ForEach(Sub(ast) m_asteroids.Add(ast))
@@ -160,9 +169,7 @@ Public NotInheritable Class Asteroids
 
         If m_asteroids.Count <> 0 Then
             m_asteroids.RemoveAll(Function(o) o.X < 0)
-        End If
-
-        If m_asteroids.Count = 0 Then
+        Else
             m_score += 200 + Random.Shared.Next(3) * 100
 
             ' add them 90 degress left and right to the player, their coordinates
@@ -268,9 +275,9 @@ CheckExit:
     End Sub
 
     Friend Shared Sub Main()
-        With New Asteroids
-            If .Construct(400, 300, fullScreen:=True) Then .Start()
-        End With
+        Using game As New Asteroids
+            If game.Construct(400, 300, fullScreen:=True) Then game.Start()
+        End Using
     End Sub
 
 End Class
