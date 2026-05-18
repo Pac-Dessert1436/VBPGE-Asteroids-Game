@@ -16,8 +16,8 @@ Public NotInheritable Class Asteroids
     Private ReadOnly m_bullets As New List(Of SpaceObject)
     Private m_player As SpaceObject
     Private m_score As Integer = 0
-    Private m_modelShip As List(Of (Single, Single))
-    Private m_modelAstroid As List(Of (Single, Single))
+    Private m_modelShip As List(Of Vf2d)
+    Private m_modelAstroid As List(Of Vf2d)
     Private m_gameState As GameState = GameState.Title
     Private m_lives As Integer = 3
 
@@ -28,16 +28,17 @@ Public NotInheritable Class Asteroids
 
     Protected Overrides Function OnUserCreate() As Boolean
 
-        m_modelShip = New List(Of (Single, Single)) From {(0.0F, -5.0F),
-                                                          (-2.5F, +2.5F),
-                                                          (+2.5F, +2.5F)} ' A simple Isoceles Triangle
+        m_modelShip = New List(Of Vf2d) From {
+            New Vf2d(0.0F, -5.0F),
+            New Vf2d(-2.5F, +2.5F),
+            New Vf2d(+2.5F, +2.5F)} ' A simple Isoceles Triangle
 
-        m_modelAstroid = New List(Of (Single, Single))
+        m_modelAstroid = New List(Of Vf2d)
         Dim verts = 20
         For i = 0 To verts - 1
             Dim radius = CSng((Rand / RAND_MAX * 0.4) + 0.8)
-            Dim a = i / verts * 6.28318
-            m_modelAstroid.Add((CSng(radius * Math.Sin(a)), CSng(radius * Math.Cos(a))))
+            Dim a = CSng(i / verts * Math.Tau)
+            m_modelAstroid.Add(New Vf2d(radius * MathF.Sin(a), radius * MathF.Cos(a)))
         Next
 
         sndPlayerShooting = New SoundPlayer("Assets/player_shooting.wav")
@@ -50,8 +51,11 @@ Public NotInheritable Class Asteroids
     End Function
 
     Protected Overrides Function OnUserUpdate(elapsedTime As Single) As Boolean
-        Clear()
+        Const HALF_PI As Single = 3.14159F / 2
+        Const NEW_ASTEROID_SPEED As Integer = 50
+        Const BULLET_SPEED As Integer = 75
 
+        Clear()
         Select Case m_gameState
             Case GameState.Title
                 DrawString(ScreenWidth() \ 2 - 100, ScreenHeight() \ 2 - 20, "* Asteroids *", Presets.Yellow, 2)
@@ -83,8 +87,8 @@ Public NotInheritable Class Asteroids
 
         ' Thrust
         If GetKey(Key.UP).Held Then
-            m_player.Dx += CSng(Math.Sin(m_player.Angle) * 20 * elapsedTime)
-            m_player.Dy -= CSng(Math.Cos(m_player.Angle) * 20 * elapsedTime)
+            m_player.Dx += MathF.Sin(m_player.Angle) * 20 * elapsedTime
+            m_player.Dy -= MathF.Cos(m_player.Angle) * 20 * elapsedTime
         End If
 
         m_player.X += m_player.Dx * elapsedTime
@@ -112,8 +116,8 @@ Public NotInheritable Class Asteroids
         If GetKey(Key.SPACE).Released Then
             m_bullets.Add(New SpaceObject(
                 m_player.X, m_player.Y,
-                50.0F * CSng(Math.Sin(m_player.Angle)) + m_player.Dx,
-                -50.0F * CSng(Math.Cos(m_player.Angle)) + m_player.Dy
+                BULLET_SPEED * MathF.Sin(m_player.Angle) + m_player.Dx,
+                -BULLET_SPEED * MathF.Cos(m_player.Angle) + m_player.Dy
             ))
             sndPlayerShooting.Play()
         End If
@@ -128,7 +132,6 @@ Public NotInheritable Class Asteroids
         Next
 
         Dim newAstroids As New List(Of SpaceObject)
-
         ' Update and draw bullets
         For Each bullet In m_bullets
             bullet.X += bullet.Dx * elapsedTime
@@ -141,15 +144,15 @@ Public NotInheritable Class Asteroids
                     bullet.X = -100
                     sndAsteroidShot.Play()
                     If ast.Size > 4 Then
-                        Dim angle1 = Rand / RAND_MAX * 6.283185
-                        Dim angle2 = Rand / RAND_MAX * 6.283185
+                        Dim angle1 = CSng(Rand / RAND_MAX * Math.Tau)
+                        Dim angle2 = CSng(Rand / RAND_MAX * Math.Tau)
                         newAstroids.Add(New SpaceObject(ast.X, ast.Y,
-                            15 * CSng(Math.Sin(angle1)),
-                            15 * CSng(Math.Cos(angle1)),
+                            NEW_ASTEROID_SPEED * MathF.Sin(angle1),
+                            NEW_ASTEROID_SPEED * MathF.Cos(angle1),
                             ast.Size >> 1, 0.0))
                         newAstroids.Add(New SpaceObject(ast.X, ast.Y,
-                            15 * CSng(Math.Sin(angle2)),
-                            15 * CSng(Math.Cos(angle2)),
+                            NEW_ASTEROID_SPEED * MathF.Sin(angle2),
+                            NEW_ASTEROID_SPEED * MathF.Cos(angle2),
                             ast.Size >> 1, 0.0))
                     End If
                     ast.X = -100
@@ -174,20 +177,20 @@ Public NotInheritable Class Asteroids
 
             ' add them 90 degress left and right to the player, their coordinates
             ' be wrapped by the next astroid update
-            m_asteroids.Add(New SpaceObject(30 * CSng(Math.Sin(m_player.Angle - 3.14159 / 2)),
-                            30 * CSng(Math.Cos(m_player.Angle - 3.14159 / 2)),
-                            10 * CSng(Math.Sin(m_player.Angle)),
-                            10 * CSng(Math.Cos(m_player.Angle)),
+            m_asteroids.Add(New SpaceObject(30 * MathF.Sin(m_player.Angle - HALF_PI),
+                            30 * MathF.Cos(m_player.Angle - HALF_PI),
+                            10 * MathF.Sin(m_player.Angle),
+                            10 * MathF.Cos(m_player.Angle),
                             16, 0))
-            m_asteroids.Add(New SpaceObject(30 * CSng(Math.Sin(m_player.Angle + 3.14159 / 2)),
-                            30 * CSng(Math.Cos(m_player.Angle + 3.14159 / 2)),
-                            10 * CSng(Math.Sin(-m_player.Angle)),
-                            10 * CSng(Math.Cos(-m_player.Angle)),
+            m_asteroids.Add(New SpaceObject(30 * MathF.Sin(m_player.Angle + HALF_PI),
+                            30 * MathF.Cos(m_player.Angle + HALF_PI),
+                            10 * MathF.Sin(-m_player.Angle),
+                            10 * MathF.Cos(-m_player.Angle),
                             16, 0))
-            m_asteroids.Add(New SpaceObject(30 * CSng(Math.Sin(m_player.Angle + 3.14159 / 2)),
-                            30 * CSng(Math.Cos(m_player.Angle + 3.14159 / 2)),
-                            10 * CSng(Math.Sin(m_player.Angle)),
-                            10 * CSng(Math.Cos(-m_player.Angle)),
+            m_asteroids.Add(New SpaceObject(30 * MathF.Sin(m_player.Angle + HALF_PI),
+                            30 * MathF.Cos(m_player.Angle + HALF_PI),
+                            10 * MathF.Sin(m_player.Angle),
+                            10 * MathF.Cos(-m_player.Angle),    
                             16, 0))
         End If
         DrawWireFrameModel(m_modelShip, m_player.X, m_player.Y, m_player.Angle)
@@ -218,14 +221,14 @@ CheckExit:
     Private Sub WrapCoordinates(ix As Single, iy As Single, ByRef ox As Single, ByRef oy As Single)
         ox = ix
         oy = iy
-        If ix < 0.0 Then ox = ix + ScreenWidth()
-        If ix >= ScreenWidth() Then ox = ix - ScreenWidth()
-        If iy < 0.0 Then oy = iy + ScreenHeight()
-        If iy >= ScreenHeight() Then oy = iy - ScreenHeight()
+        If ix < 0.0 Then ox = ix + ScreenWidth
+        If ix >= ScreenWidth Then ox = ix - ScreenWidth
+        If iy < 0.0 Then oy = iy + ScreenHeight
+        If iy >= ScreenHeight Then oy = iy - ScreenHeight
     End Sub
 
-    Private Overloads Function Draw(x As Single, y As Single) As Boolean
-        Return Draw(CInt(Fix(x)), CInt(Fix(y)))
+    Private Overloads Function DrawVf2d(v As Vf2d) As Boolean
+        Return Draw(CInt(Fix(v.X)), CInt(Fix(v.Y)))
     End Function
 
     Protected Overrides Function Draw(x As Integer, y As Integer) As Boolean
@@ -235,30 +238,36 @@ CheckExit:
         Return MyBase.Draw(x, y)
     End Function
 
-    Private Sub DrawWireFrameModel(vecModelCoordinates As List(Of (X As Single, Y As Single)), x As Single, y As Single, Optional r As Single = 0.0F, Optional s As Single = 1.0F, Optional col As Color = FgWhite)
+    Private Sub DrawWireFrameModel(vecModelCoordinates As List(Of Vf2d), x As Single, y As Single, Optional r As Single = 0.0F, Optional s As Single = 1.0F, Optional col As Color = FgWhite)
         ' Create translated model vector of coordinate pairs
-        Dim transformedCoordinates As New List(Of (X As Single, Y As Single))
+        Dim transformedCoordinates As New List(Of Vf2d)
         Dim verts = vecModelCoordinates.Count
         For Each entry In vecModelCoordinates
-            transformedCoordinates.Add((entry.X, entry.Y))
+            transformedCoordinates.Add(entry)
         Next
 
         ' Rotate
         For i = 0 To verts - 1
-            transformedCoordinates(i) = (vecModelCoordinates(i).X * CSng(Math.Cos(r)) - vecModelCoordinates(i).Y * CSng(Math.Sin(r)),
-                                               vecModelCoordinates(i).X * CSng(Math.Sin(r)) + vecModelCoordinates(i).Y * CSng(Math.Cos(r)))
+            transformedCoordinates(i) = New Vf2d(
+                vecModelCoordinates(i).X * MathF.Cos(r) - vecModelCoordinates(i).Y * MathF.Sin(r),
+                vecModelCoordinates(i).X * MathF.Sin(r) + vecModelCoordinates(i).Y * MathF.Cos(r)
+            )
         Next
 
         ' Scale
         For i = 0 To verts - 1
-            transformedCoordinates(i) = (transformedCoordinates(i).X * s,
-                                               transformedCoordinates(i).Y * s)
+            transformedCoordinates(i) = New Vf2d(
+                transformedCoordinates(i).X * s,
+                transformedCoordinates(i).Y * s
+            )
         Next
 
         ' Translate
         For i = 0 To verts - 1
-            transformedCoordinates(i) = (transformedCoordinates(i).X + x,
-                                               transformedCoordinates(i).Y + y)
+            transformedCoordinates(i) = New Vf2d(
+                transformedCoordinates(i).X + x,
+                transformedCoordinates(i).Y + y
+            )
         Next
 
         ' Draw Closed Polygon

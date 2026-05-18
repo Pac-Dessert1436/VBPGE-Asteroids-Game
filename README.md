@@ -12,7 +12,7 @@ A faithful re-creation of the classic Asteroids arcade game using [vbPixelGameEn
 - **Lives System**: Three lives to complete each level
 - **Score Tracking**: Earn points for destroying asteroids and completing levels
 
-> **Note**: The game currently works with basic gameplay, and the gameplay mechanics need further improvement.
+> **Note**: The game is now production-ready with challenging gameplay mechanics.
 
 ## Controls
 
