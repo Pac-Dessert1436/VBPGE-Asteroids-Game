@@ -58,8 +58,8 @@ Public NotInheritable Class Asteroids
         Clear()
         Select Case m_gameState
             Case GameState.Title
-                DrawString(ScreenWidth() \ 2 - 100, ScreenHeight() \ 2 - 20, "* Asteroids *", Presets.Yellow, 2)
-                DrawString(ScreenWidth() \ 2 - 80, ScreenHeight() \ 2 + 20, "Press SPACE to begin", Presets.Beige)
+                DrawString(ScreenWidth \ 2 - 100, ScreenHeight \ 2 - 20, "* Asteroids *", Presets.Yellow, 2)
+                DrawString(ScreenWidth \ 2 - 80, ScreenHeight \ 2 + 20, "Press SPACE to begin", Presets.Beige)
                 If GetKey(Key.SPACE).Released Then
                     ResetGame()
                     m_gameState = GameState.Playing
@@ -67,16 +67,16 @@ Public NotInheritable Class Asteroids
                 GoTo CheckExit
 
             Case GameState.Paused
-                DrawString(ScreenWidth() \ 2 - 100, ScreenHeight() \ 2 - 20, "GAME PAUSED", Presets.White, 2)
-                DrawString(50, ScreenHeight() \ 2 + 20, "Press 'P' to resume, or ESC to quit")
+                DrawString(ScreenWidth \ 2 - 100, ScreenHeight \ 2 - 20, "GAME PAUSED", Presets.White, 2)
+                DrawString(50, ScreenHeight \ 2 + 20, "Press 'P' to resume, or ESC to quit")
                 If GetKey(Key.P).Released Then m_gameState = GameState.Playing
                 GoTo CheckExit
 
             Case GameState.GameOver
-                DrawString(ScreenWidth() \ 2 - 100, ScreenHeight() \ 2 - 35, "- GAME OVER -", Presets.White, 2)
-                DrawString(ScreenWidth() \ 2 - 80, ScreenHeight() \ 2 - 5, $"Final Score: {m_score}")
-                DrawString(ScreenWidth() \ 2 - 120, ScreenHeight() \ 2 + 20, "* Press SPACE for title screen")
-                DrawString(ScreenWidth() \ 2 - 120, ScreenHeight() \ 2 + 40, "* Press ESC to exit the game")
+                DrawString(ScreenWidth \ 2 - 100, ScreenHeight \ 2 - 35, "- GAME OVER -", Presets.White, 2)
+                DrawString(ScreenWidth \ 2 - 80, ScreenHeight \ 2 - 5, $"Final Score: {m_score}")
+                DrawString(ScreenWidth \ 2 - 120, ScreenHeight \ 2 + 20, "* Press SPACE for title screen")
+                DrawString(ScreenWidth \ 2 - 120, ScreenHeight \ 2 + 40, "* Press ESC to exit the game")
                 If GetKey(Key.SPACE).Released Then m_gameState = GameState.Title
                 GoTo CheckExit
         End Select
@@ -167,7 +167,7 @@ Public NotInheritable Class Asteroids
         ' Remove bullets that have gone off screen
         If m_bullets.Count <> 0 Then
             m_bullets.RemoveAll(Function(o) o.X < 1 OrElse o.Y < 1 OrElse
-                                    o.X >= ScreenWidth() - 1 OrElse o.Y >= ScreenHeight() - 1)
+                                    o.X >= ScreenWidth - 1 OrElse o.Y >= ScreenHeight - 1)
         End If
 
         If m_asteroids.Count <> 0 Then
@@ -197,7 +197,7 @@ Public NotInheritable Class Asteroids
 
         ' Draw score and lives
         DrawString(2, 2, $"Score: {m_score}")
-        DrawString(ScreenWidth() - 100, 2, $"Lives: {m_lives}")
+        DrawString(ScreenWidth - 100, 2, $"Lives: {m_lives}")
 
 CheckExit:
         Return Not GetKey(Key.ESCAPE).Pressed
