@@ -27,7 +27,6 @@ Public NotInheritable Class Asteroids
     <DisposeField> Private sndMainTheme As SoundPlayer
 
     Protected Overrides Function OnUserCreate() As Boolean
-
         m_modelShip = New List(Of Vf2d) From {
             New Vf2d(0.0F, -5.0F),
             New Vf2d(-2.5F, +2.5F),
@@ -58,9 +57,10 @@ Public NotInheritable Class Asteroids
         Clear()
         Select Case m_gameState
             Case GameState.Title
-                DrawString(ScreenWidth \ 2 - 100, ScreenHeight \ 2 - 20, "* Asteroids *", Presets.Yellow, 2)
-                DrawString(ScreenWidth \ 2 - 80, ScreenHeight \ 2 + 20, "Press SPACE to begin", Presets.Beige)
-                If GetKey(Key.SPACE).Released Then
+                DrawString(ScreenWidth \ 2 - 100, ScreenHeight \ 2 - 35, "* Asteroids *", Presets.Yellow, 2)
+                DrawString(ScreenWidth \ 2 - 80, ScreenHeight \ 2 + 5, "Press ENTER to begin", Presets.Beige)
+                DrawString(30, ScreenHeight \ 2 + 50, "Game Controls: Arrows to move, SPACE to shoot")
+                If GetKey(Key.ENTER).Released Then
                     ResetGame()
                     m_gameState = GameState.Playing
                 End If
@@ -75,9 +75,9 @@ Public NotInheritable Class Asteroids
             Case GameState.GameOver
                 DrawString(ScreenWidth \ 2 - 100, ScreenHeight \ 2 - 35, "- GAME OVER -", Presets.White, 2)
                 DrawString(ScreenWidth \ 2 - 80, ScreenHeight \ 2 - 5, $"Final Score: {m_score}")
-                DrawString(ScreenWidth \ 2 - 120, ScreenHeight \ 2 + 20, "* Press SPACE for title screen")
+                DrawString(ScreenWidth \ 2 - 120, ScreenHeight \ 2 + 20, "* Press ENTER for title screen")
                 DrawString(ScreenWidth \ 2 - 120, ScreenHeight \ 2 + 40, "* Press ESC to exit the game")
-                If GetKey(Key.SPACE).Released Then m_gameState = GameState.Title
+                If GetKey(Key.ENTER).Released Then m_gameState = GameState.Title
                 GoTo CheckExit
         End Select
 

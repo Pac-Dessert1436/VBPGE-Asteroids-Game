@@ -20,9 +20,10 @@ A faithful re-creation of the classic Asteroids arcade game using [vbPixelGameEn
 |-----|--------|
 | **LEFT/RIGHT** | Rotate ship |
 | **UP** | Thrust forward |
-| **SPACE** | Fire bullet / Start game |
-| **P** | Pause game |
-| **ESC** | Quit game |
+| **SPACE** | Fire a bullet |
+| **P** | Pause/resume game |
+| **ENTER** | Begin the game |
+| **ESC** | Quit the game |
 
 ## Game Features
 
